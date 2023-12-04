@@ -1,6 +1,6 @@
 # Parametric heddle
 
-A set of OpenSCAD files for generating a heddle suitable for 3D printing. This heddle fits nicely into the heddle braces of this [rigid heddle weaving loom on Thingiverse](https://www.thingiverse.com/thing:490467).
+A set of OpenSCAD files for generating a weaving loom heddle suitable for 3D printing. This heddle fits nicely into the heddle braces of this [rigid heddle weaving loom on Thingiverse](https://www.thingiverse.com/thing:490467).
 
 You can configure various things like:
 
@@ -14,15 +14,15 @@ You can configure various things like:
 This design is a bit different from the original:
 
 * The reeds are centred in the panel, so you don't have to worry about whether the file you're printing is a left or a right.
-* It's meant to be assembled without screws if you like -- instead, you print out dowel end-caps and pressure-fit them into the screens at the ends of the dowel. There are little notch/tongue fittings to keep the thing from swivelling on the dowel, and to hopefully provide a little more pressure-fitting. (Note that, by default, the end-caps are configured to have American #3 countersunk screw holes so you can screw them together if you like.)
-* Because it's parametric and goes together with pressure fittings, this design is explicitly meant to let you assemble and reassemble variable-dent heddles of whatever configuration you like. Two inches of six-dent followed by one inch of twelve-dent? Go for it?
+* It's meant to be assembled without screws if you like -- instead, you print out dowel end-caps and pressure-fit them into the screens at the ends of the dowel. There are little notch/tongue fittings to keep the thing from swivelling on the dowel, and to hopefully provide a little more pressure-fitting. (Note that, by default, the end-caps are configured to also have American #3 countersunk screw holes so you can screw them together if you like.)
+* Because it's parametric and goes together with pressure fittings, this design is explicitly meant to let you assemble and reassemble variable-dent heddles of whatever configuration you like. Two inches of six-dent followed by one inch of twelve-dent? Go for it!!!
 * All pieces are completely symmetrical, so you don't need to generate left and right models.
 
 ## Usage
 
 Just open up `heddle.scad`, scroll down to the line where it says to uncomment various lines in order to generate models, and hit F6!. There are preconfigured lines for a heddle screen panel, a top dowel cap, and a bottom dowel cap.
 
-To configure things, read all the documentation in the comments. It's quite well-documented (if you find something doesn't make sense, please open up a GitHub issue!) The parameters you'll probably wanto to change are `heddle_height`, `reed_dent`, and `screen_inches`.
+To configure things, read all the documentation in the comments. It's quite well-documented (if you find something doesn't make sense, please open up a GitHub issue!) The parameters you'll probably want to change are `heddle_height`, `reed_dent`, and `screen_inches`.
 
 ## Examples
 

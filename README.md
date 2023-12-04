@@ -40,7 +40,7 @@ A 12-dent screen four inches long.
 
 An 8-dent screen one inch long.
 
-![](heddle_screen_8_dent_1_inc.png)
+![](heddle_screen_8_dent_1_inch.png)
 
 An 8-dent screen only 70mm tall and two inches long.
 

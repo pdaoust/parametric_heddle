@@ -54,6 +54,9 @@ screen_length = screen_inches * 25.4;
 // Adjust dowel hole tolerance separately from notch/tongue.
 //dowel_hole_tolerance = tolerance;
 
+// Adjust notch/tongue tolerance separately from dowel hole tolerance.
+//fitting_tolerance = tolerance;
+
 // Put a screw hole in the dowel caps.
 // Set to false to rely on pressure-fitting alone.
 // Use the american_screw_size() function to choose anywhere from a

@@ -65,6 +65,12 @@ module handle_with_fittings(style, length) {
       // Anyhow, a handle with notches needs them on both sides.
       translate([0, length - fitting_size.y + 0.08, 0]) fitting_cubes("notch");
     }
+  } else if (style == "fitting-tolerance-test") {
+    length = cap_wall_thickness + fitting_size.y + fitting_tolerance / 2;
+    difference() {
+      handle(length);
+      translate([0, length - fitting_size.y + 0.08, 0]) fitting_cubes("notch");
+    }
   } else {
     union() {
       handle(length);

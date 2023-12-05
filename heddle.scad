@@ -84,10 +84,15 @@ number_of_reeds = (reed_dent / 2) * (screen_length / 25.4);
 //screen();
 
 // Uncomment this line to build a dowel cap for the top handle.
-//translate([0, 0, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
+//rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
 
 // Uncomment this line to build a dowel cap for the bottom handle.
-//translate([0, 0, bottom_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", bottom_cap_length);
+//rotate([-90, 0, 0]) handle_with_fittings("cap", bottom_cap_length);
+
+// Uncomment these lines to build the minimal parts needed to print a
+// presure-fitting test.
+rotate([90, 0, 0]) handle_with_fittings("fitting-tolerance-test");
+translate([0, -40, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
 
 module screen() {
   for (i = [0:number_of_reeds - 1]) {

@@ -76,7 +76,7 @@ module handle_with_fittings(style, length) {
         if (screw) {
           // FIXME: not sure why the overlap has to be 0.01 instead of
           // 0.001 in order to work.
-          translate([handle_thickness / 2, cap_wall_thickness + 0.01, handle_thickness / 2]) rotate([-90, 0, 0]) #countersunk_screw_hole(screw[0], screw[1], cap_wall_thickness);
+          translate([handle_thickness / 2, cap_wall_thickness + 0.01, handle_thickness / 2]) rotate([-90, 0, 0]) countersunk_screw_hole(screw[0], screw[1], cap_wall_thickness);
         }
       }
     }

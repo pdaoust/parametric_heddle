@@ -32,7 +32,7 @@ reed_hole_height = 10;
 // length needs to be an even multiple of an inch. To find out why,
 // make the screen length a non-recommended size and see what
 // happens ;)
-screen_inches = 1;
+screen_inches = 2;
 screen_length = screen_inches * 25.4;
 
 //////// HEDDLE HANDLE SETTINGS IF YOU WANT TO OVERRIDE THEM!

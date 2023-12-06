@@ -118,8 +118,9 @@ screen(2.5 * 25.4, band_weaving_reed_pattern);
 // Uncomment this line to build a dowel cap for the top handle.
 // Note that if you want to rely on pressure-fitting alone, you'll want to
 // cut your top dowel a bit longer and increase the second param here.
-// A good value might be cap_wall_thickness * 3 = 6mm, which means your
-// top dowel should be 12mm longer than the instructions tell you.
+// A good value might be cap_wall_thickness * 3 = 6mm, which means 4mm of
+// the top dowel would fit into the end cap, which means it should be 8mm
+// longer than the instructions tell you.
 //rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
 
 // Uncomment this line to build a dowel cap for the bottom handle.

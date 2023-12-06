@@ -45,3 +45,7 @@ An 8-dent screen one inch long.
 An 8-dent screen only 70mm tall and two inches long.
 
 ![](heddle_screen_short_8_dent_2_inches.png)
+
+An 8-dent screen with a fancy band weaving pattern, similar to what you see in [this commercially available heddle](https://harvestlooms.com/products/15-double-slot-rigid-heddle-loom-weaving-backstrap-band-weaving-inkle-pattern-weaving-saami-sami-baltic-nordic-inlay-patterns).
+
+![](heddle_screen_8_dent_fancy_pattern.png)

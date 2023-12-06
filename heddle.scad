@@ -44,7 +44,7 @@ reed_dent = 8;
 
 // A fancy patterned screen for band weaving like you see in the middle of
 // https://harvestlooms.com/products/15-double-slot-rigid-heddle-loom-weaving-backstrap-band-weaving-inkle-pattern-weaving-saami-sami-baltic-nordic-inlay-patterns
-// Try it out on a screen 3 inches wide to get the full effect.
+// Try it out on a screen 2.75 inches wide to get the full effect.
 reed_pattern = [1, 0.05, 0.5, 0.05, 1, 0.5];
 
 // The length of the screen, if that's what you're building.

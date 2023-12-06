@@ -12,52 +12,53 @@ $fn = 20;
 heddle_height = 110;
 
 // The thickness of all the reeds (not their width; that's calculated
-// from the dent).
+// from the dent count).
 reed_thickness = 3;
 
 // The dent count, or number of threads per inch -- for example,
 // 8-dent gives eight slots per inch to put threads through.
 reed_dent = 8;
 
-// The pattern of holes for the threads to fit through.
-// This requires a bit of explanation, so here you go!
-// If you specify values that are less than or equal to 1, it'll indicate how far up and down the screen the slot goes. Examples:
+// Here's how you create patterns of holes and slots for the threads to fit
+// through. The pattern is an array of lengths. Values that are less than
+// or equal to 1 are treated as fractions of a full-length slot that goes
+// all the way to the handles. Examples:
+//
 // * 1 = a slot that goes from the top to the bottom of the screen.
 // * 0.1 = the hole is only 10% the height of the screen; the other 90%
 //   is filled in.
-// If you specify values that are more than 1, it'll treat them as
-// lengths of the holes in millimetres instead.
-// Anyhow, this pattern is repeated as many times as is necessary to fill
-// up your reed panel, starting with a half-wide hole. I'd recommend a full slot
-// for the first hole, because lining up two halves of a smaller hole might
+//
+// Values that are more than 1 are treated as lengths in millimetres. You
+// may notice that this means you can't create an 1mm hole. That's tricky,
+// because (a) you must have more dexterity than I do to thread something
+// that thin, (b) your printer must have insanely good precision, and (c)
+// the minimum hole length is the same as the hole width, which is
+// calculated from the dent count:
+//
+//   hole width in inches = 1 ÷ dent count ÷ 2
+//
+// The pattern is repeated as many times as is necessary to fill up your
+// reed panel, starting with a half-wide hole. I'd recommend a full slot
+// for the first hole, because lining up two halves of a short hole might
 // create alignment issues and sharp bits for the yarn to catch on.
 // To see what I'm talking about, choose isometric view and look at it from
 // directly above. See how the left and right edges of the screen are
 // slightly narrower than than handles and have little scalloped corners?
-// That's two halves of a hole.
+// That's because they're both half of a slot.
+
+// Here are some samples to get you going.
 
 // An old-fashioned screen with nothing but full-length slots.
-//reed_pattern = [1];
+slots_reed_pattern = [1];
 
-// A modern screen with alternating slots and 10mm holes.
-//reed_pattern = [1, 10];
+// A modern screen with alternating slots and holes.
+slots_holes_reed_pattern = [1, 0.05];
 
-// A fancy patterned screen for band weaving like you see in the middle of
-// https://harvestlooms.com/products/15-double-slot-rigid-heddle-loom-weaving-backstrap-band-weaving-inkle-pattern-weaving-saami-sami-baltic-nordic-inlay-patterns
-// Try it out on a screen 2.75 inches wide to get the full effect.
-reed_pattern = [1, 0.05, 0.5, 0.05, 1, 0.5];
-
-// The length of the screen, if that's what you're building.
-// If you prefer metric, you can just define screen_length directly.
-// Given that reed dents are specified in inches, and therefore the
-// width of a reed is a fraction of an inch, screen_length must be an
-// imperial number that's an even multiple of one reed and one slot.
-// A similar thing is true for odd reed dent counts -- your screen
-// length needs to be an even multiple of an inch. To find out why,
-// make the screen length a non-recommended size and see what
-// happens ;)
-screen_inches = 2;
-screen_length = screen_inches * 25.4;
+// A fancy patterned screen for Sámi band weaving, similar to the ones
+// made by Harvest Looms and Stoorstålka. Try it out on an 8-dent screen
+// 2.5 inches wide to get a 7-band heddle (must be sandwiched between two
+// conventional slot-and-hole panels to complete the heddle).
+band_weaving_reed_pattern = [1, 0.5, 1, 0.05, 0.5, 0.05];
 
 //////// HEDDLE HANDLE SETTINGS IF YOU WANT TO OVERRIDE THEM!
 //////// SCROLL DOWN TO FIND THE PLACE WHERE YOU OUTPUT THE MODELS.
@@ -93,13 +94,26 @@ screen_length = screen_inches * 25.4;
 
 // The bottom dowel caps are a bit longer; this is so that they can
 // reach all the way to the heddle brace. Adjust the length according
-// to how much screen you've already jammed onto your dowel.
+// to how much leftover space you expect to have after you've jammed a
+// bunch of screen panels onto your bottom dowel.
 //bottom_cap_length = 7.75;
-
+ 
 //////// HERE'S WHERE YOU OUTPUT THE STUFF!
 
-// Uncomment this line to build a whole screen panel.
-//screen();
+// Uncomment this line to build a whole screen panel. The first value is
+// the width of the panel in mm (you can see I've specified it in inches
+// then converted it to mm), while the second value is an array of hole
+// sizes (see above for some examples). You can also override all the
+// default values; see the screen() module below for parameter order.
+//
+// Keep in mind that you want your screen length to be some tidy multiple
+// of the reeds you're specifying. For instance, a simple pattern of
+// slots and holes in an 8-dent reed will repeat every 1/4 inch
+// (1/8" hole spacing * 2 hole sizes in the pattern). So you'll want a
+// screen length of some multiple of 1/4".
+// The example given here uses the band weaving pattern to create a 7-band
+// heddle panel to be used between two conventional slot-and-hole panels.
+screen(2.5 * 25.4, band_weaving_reed_pattern);
 
 // Uncomment this line to build a dowel cap for the top handle.
 //rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
@@ -112,7 +126,12 @@ screen_length = screen_inches * 25.4;
 //rotate([90, 0, 0]) handle_with_fittings("fitting-tolerance-test");
 //translate([0, -40, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
 
-module screen() {
+// Uncomment these lines to build a length of handle to act as a spacer
+// (this example is for a 2" length). This might be useful if you want to
+// assemble a heddle that's shorter than your loom width.
+//rotate([0, 90, 0]) handle_with_fittings("screen", 2 * 25.4);
+
+module screen(screen_length, reed_pattern, heddle_height = heddle_height, reed_dent = reed_dent, reed_thickness = reed_thickness) {
   reed_height = heddle_height - handle_height * 2;
   hole_spacing = 25.4 / reed_dent;
   hole_width = hole_spacing / 2;

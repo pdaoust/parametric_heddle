@@ -109,8 +109,8 @@ screen_length = screen_inches * 25.4;
 
 // Uncomment these lines to build the minimal parts needed to print a
 // presure-fitting test.
-rotate([90, 0, 0]) handle_with_fittings("fitting-tolerance-test");
-translate([0, -40, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
+//rotate([90, 0, 0]) handle_with_fittings("fitting-tolerance-test");
+//translate([0, -40, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
 
 module screen() {
   reed_height = heddle_height - handle_height * 2;

@@ -16,12 +16,36 @@ heddle_height = 110;
 reed_thickness = 3;
 
 // The dent count, or number of threads per inch -- for example,
-// 8-dent gives four reeds with holes in them, separated by four
-// slots.
+// 8-dent gives eight slots per inch to put threads through.
 reed_dent = 8;
 
-// The length of the holes in the reeds.
-reed_hole_height = 10;
+// The pattern of holes for the threads to fit through.
+// This requires a bit of explanation, so here you go!
+// If you specify values that are less than or equal to 1, it'll indicate how far up and down the screen the slot goes. Examples:
+// * 1 = a slot that goes from the top to the bottom of the screen.
+// * 0.1 = the hole is only 10% the height of the screen; the other 90%
+//   is filled in.
+// If you specify values that are more than 1, it'll treat them as
+// lengths of the holes in millimetres instead.
+// Anyhow, this pattern is repeated as many times as is necessary to fill
+// up your reed panel, starting with a half-wide hole. I'd recommend a full slot
+// for the first hole, because lining up two halves of a smaller hole might
+// create alignment issues and sharp bits for the yarn to catch on.
+// To see what I'm talking about, choose isometric view and look at it from
+// directly above. See how the left and right edges of the screen are
+// slightly narrower than than handles and have little scalloped corners?
+// That's two halves of a hole.
+
+// An old-fashioned screen with nothing but full-length slots.
+//reed_pattern = [1];
+
+// A modern screen with alternating slots and 10mm holes.
+//reed_pattern = [1, 10];
+
+// A fancy patterned screen for band weaving like you see in the middle of
+// https://harvestlooms.com/products/15-double-slot-rigid-heddle-loom-weaving-backstrap-band-weaving-inkle-pattern-weaving-saami-sami-baltic-nordic-inlay-patterns
+// Try it out on a screen 3 inches wide to get the full effect.
+reed_pattern = [1, 0.05, 0.5, 0.05, 1, 0.5];
 
 // The length of the screen, if that's what you're building.
 // If you prefer metric, you can just define screen_length directly.
@@ -72,12 +96,6 @@ screen_length = screen_inches * 25.4;
 // to how much screen you've already jammed onto your dowel.
 //bottom_cap_length = 7.75;
 
-// Important calculations; don't touch.
-reed_height = heddle_height - handle_height * 2;
-single_reed_width = 25.4 / reed_dent * 2;
-reed_spacing_unit = single_reed_width / 4;
-number_of_reeds = (reed_dent / 2) * (screen_length / 25.4);
-
 //////// HERE'S WHERE YOU OUTPUT THE STUFF!
 
 // Uncomment this line to build a whole screen panel.
@@ -95,21 +113,33 @@ rotate([90, 0, 0]) handle_with_fittings("fitting-tolerance-test");
 translate([0, -40, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
 
 module screen() {
-  for (i = [0:number_of_reeds - 1]) {
-      translate([0, i * single_reed_width, 0]) reed();
+  reed_height = heddle_height - handle_height * 2;
+  hole_spacing = 25.4 / reed_dent;
+  hole_width = hole_spacing / 2;
+  number_of_holes = reed_dent * (screen_length / 25.4);
+  reed_pattern_count = len(reed_pattern);
+
+  difference() {
+    cube([reed_height + 0.002, screen_length, reed_thickness]);
+    for (i = [0:number_of_holes]) {
+      hole_length = reed_pattern[i % reed_pattern_count];
+      calculated_hole_length = hole_length <= 1
+        // A fraction of the reed height.
+        ? reed_height * hole_length
+        // A millimetre value.
+        : hole_length;
+      translate([reed_height / 2, i * hole_spacing, 0]) reed_hole(calculated_hole_length, hole_width);
+    }
   }
 
   translate([reed_height, 0, 0]) scale([-1, 1, 1]) handle_with_fittings("screen", screen_length);
   handle_with_fittings("screen", screen_length);
 }
 
-module reed() {
-    translate([0, reed_spacing_unit / 2, 0]) difference() {
-        cube([reed_height + 0.002, reed_spacing_unit * 3, reed_thickness]);
-        reed_hole_start = (reed_height - reed_hole_height + reed_spacing_unit) / 2;
-        reed_hole_square = reed_hole_height - reed_spacing_unit;
-        translate([reed_hole_start, reed_spacing_unit, -0.001]) cube([reed_hole_square, reed_spacing_unit, reed_thickness + 0.002]);
-        translate([reed_hole_start, reed_spacing_unit * 1.5, -0.001]) cylinder(reed_thickness + 0.002, d = reed_spacing_unit);
-        translate([reed_hole_start + reed_hole_square, reed_spacing_unit * 1.5, -0.001]) cylinder(reed_thickness + 0.002, d = reed_spacing_unit);
-    }
+module reed_hole(length, width) {
+  translate([0, 0, reed_thickness / 2 - 0.001]) union() {
+    cube([length - width, width, reed_thickness + 0.003], center=true);
+    translate([length / 2 - width / 2, 0, 0]) cylinder(reed_thickness + 0.003, d=width, center=true);
+    translate([length / -2 + width / 2, 0, 0]) cylinder(reed_thickness + 0.003, d=width, center=true);
+  }
 }

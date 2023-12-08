@@ -55,10 +55,22 @@ slots_reed_pattern = [1];
 slots_holes_reed_pattern = [1, 0.05];
 
 // A fancy patterned screen for Sámi band weaving, similar to the ones
-// made by Harvest Looms and Stoorstålka. Try it out on an 8-dent screen
-// 2.5 inches wide to get a 7-band heddle (must be sandwiched between two
-// conventional slot-and-hole panels to complete the heddle).
-band_weaving_reed_pattern = [1, 0.5, 1, 0.05, 0.5, 0.05];
+// made by Harvest Looms and Stoorstålka. Try it out on an 8-dent screen:
+//
+// * 1.75" will give you a 5-band heddle
+// * 2.5" for a 7-band heddle
+// * 3.5" for a 9-band heddle
+//
+// You need to sandwich the panel between two conventional slot-and-hole
+// panels to complete the heddle.
+band_weaving_reed_pattern_1 = [1, 0.5, 1, 0.05, 0.5, 0.05];
+
+// Another popular patterned screen style for Sámi band weaving. This is
+// meant to be assembled with one (or more) panel(s) on the left and
+// identical one(s) on theright, but flipped, forming a mirror image.
+// If you do 8-dent, make sure each panel is a multiple of 3/4" wide.
+// Similarly for 12-dent, make it a multiple of 0.5" wide. Et cetera!
+band_weaving_reed_pattern_2 = [1, 0.05, 0.333];
 
 //////// HEDDLE HANDLE SETTINGS IF YOU WANT TO OVERRIDE THEM!
 //////// SCROLL DOWN TO FIND THE PLACE WHERE YOU OUTPUT THE MODELS.
@@ -113,7 +125,7 @@ band_weaving_reed_pattern = [1, 0.5, 1, 0.05, 0.5, 0.05];
 // screen length of some multiple of 1/4".
 // The example given here uses the band weaving pattern to create a 7-band
 // heddle panel to be used between two conventional slot-and-hole panels.
-screen(2.5 * 25.4, band_weaving_reed_pattern);
+screen(1 * 25.4, band_weaving_reed_pattern_1);
 
 // Uncomment this line to build a dowel cap for the top handle.
 // Note that if you want to rely on pressure-fitting alone, you'll want to

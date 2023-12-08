@@ -9,45 +9,48 @@ cap_wall_thickness = is_undef(cap_wall_thickness) ? 2.001 : cap_wall_thickness;
 // of the bottom cap lengths from the original design.
 bottom_cap_length = 7.75;
 
-// The amount by which to expand holes and shrink tongues.
-// Adjust this to match the precision of your printer.
-tolerance = is_undef(tolerance) ? 0 : tolerance;
-include <countersunk_screw_hole.scad>;
-
 // A hole for a countersunk wood screw to attach the handle caps
 // to the dowel that runs through the handle of the entire heddle.
 // Set this to false if you just want to pressure-fit the handle caps
 // with the built-in tongues and notches.
 // This setting applies only to dowel caps, not screen handles.
+include <countersunk_screw_hole.scad>;
 screw = is_undef(screw) ? no_3_screw : screw;
+
+// The amount by which to expand holes and shrink tongues.
+// Adjust this to match the precision of your printer.
+pressure_fitting_tolerance = is_undef(pressure_fitting_tolerance) ? 0 : pressure_fitting_tolerance;
+
+// By default this is a bit looser than the usual pressure fitting
+// tolerance so you can slip screen panels on and off quickly.
+dowel_hole_tolerance = is_undef(dowel_hole_tolerance) ? 0.015 : dowel_hole_tolerance;
+
+// The dowel caps, however, look to the presence or absence of screw holes
+// to decide whether to use the tight pressure fitting tolerance versus
+// the loose dowel hole tolerance.
+dowel_cap_hole_tolerance = screw ? dowel_hole_tolerance : pressure_fitting_tolerance;
 
 // Within reason, you can play around with the dowel size.
 // Make sure the handle walls are thick enough though!
 handle_dowel_dia = is_undef(handle_dowel_dia) ? 7/16 * 25.4 : handle_dowel_dia;
 
-// You can change this independently from other tolerances to adjust
-// for a dowel that's slightly bigger or smaller than advertised.
-dowel_hole_tolerance = is_undef(dowel_hole_tolerance) ? tolerance : dowel_hole_tolerance;
-
 // The size of the tongue and notch to attach the end caps to the
 // dowel and the heddle screen panels. If you play with these values,
 // make sure the handles have thick enough walls afterward!
-fitting_size = is_undef(fitting_size) ? [4, 3, 2] : fitting_size;
-fitting_offset_from_base = is_undef(fitting_offset_from_base) ? -14.25 : fitting_offset_from_base;
+mortise_tenon_size = is_undef(mortise_tenon_size) ? [4, 3, 2] : mortise_size;
+mortise_tenon_offset_from_base = is_undef(mortise_tenon_offset_from_base) ? -14.25 : mortise_tenon_offset_from_base;
 
 // This is the gap between the two fitting notches/tongues.
-fitting_spacing = is_undef(fitting_spacing) ? 7 : fitting_spacing;
+mortise_tenon_spacing = is_undef(mortise_tenon_spacing) ? 7 : mortise_tenon_spacing;
 
 // The fittings are rotated slightly for optimal fit between the
 // dowel hole and the curved outer edge.
-fitting_rotation = 55;
-fitting_tolerance = tolerance;
+mortise_tenon_rotation = 55;
+mortise_tenon_tolerance = pressure_fitting_tolerance;
 
 // If you want this to be compatible with the original loom's
 // heddle block, treat the rest of the variables as constants.
 handle_thickness = 15.5;
-// Don't change this one; it'll cause weird things to happen.
-fitting_depth_offset = fitting_size.y / 2 - 0.001;
 
 // This constant doesn't actually affect anything; it's just a rough
 // eyeballing of the amount the curved end pokes out beyond the cube.
@@ -60,22 +63,22 @@ module handle_with_fittings(style, length) {
   if (style == "screen") {
     difference() {
       handle(length);
-      translate([0, -0.001, 0]) fitting_cubes("notch");
+      translate([0, -0.001, 0]) mortise_tenon_cubes("notch");
       // I cannot for the life of me figure out where this 0.08 is coming from and why it's necessary.
       // Anyhow, a handle with notches needs them on both sides.
-      translate([0, length - fitting_size.y + 0.08, 0]) fitting_cubes("notch");
+      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
     }
   } else if (style == "fitting-tolerance-test") {
-    length = cap_wall_thickness + fitting_size.y + fitting_tolerance / 2;
+    length = cap_wall_thickness + mortise_tenon_size.y + mortise_tenon_tolerance / 2;
     difference() {
       handle(length);
-      translate([0, length - fitting_size.y + 0.08, 0]) fitting_cubes("notch");
+      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
     }
   } else {
     union() {
       handle(length);
       // A handle with tongues only needs one...
-      translate([0, 0.001 - fitting_size.y, 0]) fitting_cubes("tongue");
+      translate([0, 0.001 - mortise_tenon_size.y, 0]) mortise_tenon_cubes("tongue");
       // Because the other end is just a cap.
       translate([-handle_thickness, length - cap_wall_thickness, 0]) difference() {
         cube([handle_thickness, cap_wall_thickness, handle_thickness]);
@@ -89,15 +92,16 @@ module handle_with_fittings(style, length) {
   }
 }
 
-module fitting_cubes(component) {
-  offset = component == "notch" ? fitting_tolerance : -fitting_tolerance;
+module mortise_tenon_cubes(component) {
+  mortise_tenon_depth_offset = mortise_tenon_size.y / 2 - 0.001;
+  offset = component == "notch" ? mortise_tenon_tolerance : -mortise_tenon_tolerance;
   size = [
-    fitting_size.x + offset,
-    fitting_size.y + offset / 2,
-    fitting_size.z + offset
+    mortise_tenon_size.x + offset,
+    mortise_tenon_size.y + offset / 2,
+    mortise_tenon_size.z + offset
   ];
-  translate([fitting_offset_from_base, fitting_depth_offset, fitting_spacing / 2]) rotate([0, fitting_rotation, 0]) cube(size, center=true);
-  translate([fitting_offset_from_base, fitting_depth_offset, handle_thickness - fitting_spacing / 2]) rotate([0, -fitting_rotation, 0]) cube(size, center=true);
+  translate([mortise_tenon_offset_from_base, mortise_tenon_depth_offset, mortise_tenon_spacing / 2]) rotate([0, mortise_tenon_rotation, 0]) cube(size, center=true);
+  translate([mortise_tenon_offset_from_base, mortise_tenon_depth_offset, handle_thickness - mortise_tenon_spacing / 2]) rotate([0, -mortise_tenon_rotation, 0]) cube(size, center=true);
 }
 
 module handle(length) {

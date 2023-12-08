@@ -84,25 +84,35 @@ band_weaving_reed_pattern_2 = [1, 0.05, 0.333];
 // The thickness of the dowel cap wall.
 //cap_wall_thickness = 2.001;
 
-// The amount by which to expand holes and shrink tongues.
-// Adjust this to match the precision of your printer.
-//tolerance = 0;
-
-// Adjust dowel hole tolerance separately from notch/tongue.
-//dowel_hole_tolerance = tolerance;
-
-// Adjust notch/tongue tolerance separately from dowel hole tolerance.
-//fitting_tolerance = tolerance;
-
 // Put a screw hole in the dowel caps.
 // Set to false to rely on pressure-fitting alone.
 // Use the american_screw_size() function to choose anywhere from a
 // #2 to #5 countersunk screw hole.
 //screw = american_screw_size(3);
 
+// The amount by which to expand holes and shrink tongues.
+// Adjust this to match the precision of your printer.
+//pressure_fitting_tolerance = 0;
+
+// Adjust dowel hole tolerance separately from notch/tongue. Keep in mind
+// that if you choose pressure fittings instead of holes, the end caps
+// should be tight -- maybe 0 tolerance -- and the screens should be loose
+// to make it easy to insert and remove the dowels for quick
+// reconfiguration. You might also want to print out some test sections and
+// dry-fit your dowels to see if they're the diameter they say they are!
+//dowel_hole_tolerance = 0.015; // loose
+
+// If you leave dowel_cap_hole_tolerance alone and don't want screws, it'll
+// choose the tighter pressure-fitting tolerance rather than the loose
+// dowel hole tolerance.
+//dowel_cap_hole_tolerance = screw ? dowel_hole_tolerance : pressure_fitting_tolerance;
+
+// Adjust notch/tongue tolerance separately from dowel hole tolerance.
+//mortise_tenon_tolerance = tolerance;
+
 // The dimensions of the notch and tongue to keep the dowel caps from
 // slipping. Length × depth × thickness.
-//fitting_size = [4, 3, 2];
+//mortise_tenon_size = [4, 3, 2];
 
 // The bottom dowel caps are a bit longer; this is so that they can
 // reach all the way to the heddle brace. Adjust the length according

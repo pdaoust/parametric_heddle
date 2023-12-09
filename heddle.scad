@@ -187,7 +187,7 @@ mortise_tenon_tolerance = loose_tolerance;
 // screen length of some multiple of 1/4".
 // The example given here uses the band weaving pattern to create a 7-band
 // heddle panel to be used between two conventional slot-and-hole panels.
-//screen(2.5 * 25.4, band_weaving_reed_pattern_1);
+panel(band_weaving_reed_pattern_1, 2.5 * 25.4);
 
 // Uncomment this line to build a dowel cap for the top handle.
 // Note that if you want to rely on pressure-fitting alone, you'll want to
@@ -200,15 +200,27 @@ mortise_tenon_tolerance = loose_tolerance;
 // Uncomment this line to build a dowel cap for the bottom handle.
 //rotate([-90, 0, 0]) handle_with_fittings("cap", bottom_cap_length, screw);
 
-// Uncomment these lines to build the minimal parts needed to print a
-// presure-fitting test.
-//rotate([90, 0, 0]) handle_with_fittings("tolerance-test");
-//translate([0, -40, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
-
 // Uncomment these lines to build a length of handle to act as a spacer
 // (this example is for a 2" length). This might be useful if you want to
 // assemble a heddle that's shorter than your loom width.
-//rotate([0, 90, 0]) handle_with_fittings("screen", 2 * 25.4);
+//rotate([-90, 0, 0]) handle_with_fittings("spacer", 2 * 25.4);
+
+// Uncomment these lines to build the minimal parts needed to print a
+// presure-fitting test.
+//translate([0, -5, 0]) handle_with_fittings("tolerance-test");
+//fitting_test_spacer_size = mortise_tenon_size.y + cap_wall_thickness;
+//translate([0, 10, fitting_test_spacer_size]) rotate([-90, 0, 0]) handle_with_fittings("spacer", fitting_test_spacer_size);
+//translate([0, -31, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
+
+// Uncomment these lines to build a reed quality test.
+// 6-dent
+//screen([.9, .05], 0.667 * 25.4, 50, 6, 1);
+// 8-dent
+//translate([0, 0.917 * 25.4, 0]) screen([.9, .05], 0.5 * 25.4, 50, 8, 1);
+// 12-dent
+//translate([0, 1.667 * 25.4, 0]) screen([.9, .05], 0.5 * 25.4, 50, 12, 1);
+// 16-dent
+//translate([0, 2.417 * 25.4, 0]) screen([.9, .05], 0.5 * 25.4, 50, 16, 1);
 
 //// DON'T TOUCH
 
@@ -223,28 +235,34 @@ handle_thickness = 15.5;
 handle_bezel_height = 2.5;
 handle_height = handle_thickness + handle_bezel_height;
 
-module screen(screen_length, reed_pattern, heddle_height = heddle_height, reed_dent = reed_dent, reed_thickness = reed_thickness) {
-  reed_height = heddle_height - handle_height * 2;
+module screen(reed_pattern, length, height, reed_dent = reed_dent, reed_thickness = reed_thickness) {
   hole_spacing = 25.4 / reed_dent;
   hole_width = hole_spacing / 2;
-  number_of_holes = reed_dent * (screen_length / 25.4);
+  number_of_holes = reed_dent * (length / 25.4);
   reed_pattern_count = len(reed_pattern);
 
   difference() {
-    cube([reed_height + 0.002, screen_length, reed_thickness]);
+    cube([height + 0.002, length, reed_thickness]);
     for (i = [0:number_of_holes]) {
       hole_length = reed_pattern[i % reed_pattern_count];
       calculated_hole_length = hole_length <= 1
         // A fraction of the reed height.
-        ? reed_height * hole_length
+        ? height * hole_length
         // A millimetre value.
         : hole_length;
-      translate([reed_height / 2, i * hole_spacing, 0]) reed_hole(calculated_hole_length, hole_width);
+      translate([height / 2, i * hole_spacing, 0]) reed_hole(calculated_hole_length, hole_width);
     }
   }
+}
 
-  translate([reed_height, 0, 0]) scale([-1, 1, 1]) handle_with_fittings("screen", screen_length);
-  handle_with_fittings("screen", screen_length);
+module panel(reed_pattern, length, heddle_height = heddle_height, reed_dent = reed_dent, reed_thickness = reed_thickness) {
+  reed_height = heddle_height - handle_height * 2;
+
+  union() {
+    screen(reed_pattern, length, reed_height, reed_dent, reed_thickness);
+    translate([reed_height, 0, 0]) scale([-1, 1, 1]) handle_with_fittings("panel", length);
+    handle_with_fittings("panel", length);
+  }
 }
 
 module reed_hole(length, width) {
@@ -255,8 +273,9 @@ module reed_hole(length, width) {
   }
 }
 
+// FIXME: DRY this code up.
 module handle_with_fittings(style, length, screw = false) {
-  if (style == "screen") {
+  if (style == "panel") {
     difference() {
       handle(length);
 
@@ -274,6 +293,15 @@ module handle_with_fittings(style, length, screw = false) {
       handle(length);
       translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
       translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
+    }
+  } else if (style == "spacer") {
+    difference() {
+      union() {
+        handle(length);
+        translate([0, 0.001 - mortise_tenon_size.y, 0]) mortise_tenon_cubes("tongue");
+      }
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
+      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
     }
   } else if (style == "cap") {
     difference() {

@@ -187,7 +187,7 @@ mortise_tenon_tolerance = loose_tolerance;
 // screen length of some multiple of 1/4".
 // The example given here uses the band weaving pattern to create a 7-band
 // heddle panel to be used between two conventional slot-and-hole panels.
-screen(2.5 * 25.4, band_weaving_reed_pattern_1);
+//screen(2.5 * 25.4, band_weaving_reed_pattern_1);
 
 // Uncomment this line to build a dowel cap for the top handle.
 // Note that if you want to rely on pressure-fitting alone, you'll want to
@@ -203,7 +203,7 @@ screen(2.5 * 25.4, band_weaving_reed_pattern_1);
 // Uncomment these lines to build the minimal parts needed to print a
 // presure-fitting test.
 //rotate([90, 0, 0]) handle_with_fittings("tolerance-test");
-//translate([0, -40, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
+//translate([0, -40, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
 
 // Uncomment these lines to build a length of handle to act as a spacer
 // (this example is for a 2" length). This might be useful if you want to

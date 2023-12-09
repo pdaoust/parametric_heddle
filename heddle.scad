@@ -96,8 +96,8 @@ cap_wall_thickness = 2.001;
 // Keep this false if you just want to pressure-fit the end caps onto the
 // dowels like I do.
 include <countersunk_screw_hole.scad>;
-screw = no_3_screw;
-//screw = false;
+//screw = no_3_screw;
+screw = false;
 
 // The bottom dowel caps are a bit longer than the top; this is so that
 // they can reach all the way to the heddle brace. Adjust the length

@@ -187,7 +187,7 @@ mortise_tenon_tolerance = loose_tolerance;
 // screen length of some multiple of 1/4".
 // The example given here uses the band weaving pattern to create a 7-band
 // heddle panel to be used between two conventional slot-and-hole panels.
-screen(1 * 25.4, band_weaving_reed_pattern_1);
+screen(2.5 * 25.4, band_weaving_reed_pattern_1);
 
 // Uncomment this line to build a dowel cap for the top handle.
 // Note that if you want to rely on pressure-fitting alone, you'll want to

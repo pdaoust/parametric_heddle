@@ -1,5 +1,4 @@
-include <heddle_handle.scad>;
-$fn = 20;
+$fn = 40;
 
 // The total height of the heddle from edge of bottom handle to edge
 // of top handle. If you have a small printer, make sure this is
@@ -72,53 +71,106 @@ band_weaving_reed_pattern_1 = [1, 0.5, 1, 0.05, 0.5, 0.05];
 // Similarly for 12-dent, make it a multiple of 0.5" wide. Et cetera!
 band_weaving_reed_pattern_2 = [1, 0.05, 0.333];
 
-//////// HEDDLE HANDLE SETTINGS IF YOU WANT TO OVERRIDE THEM!
-//////// SCROLL DOWN TO FIND THE PLACE WHERE YOU OUTPUT THE MODELS.
+//// HEDDLE HANDLE SETTINGS
 
-// All the following commented values match the defaults from
-// heddle_handle.scad. Uncomment them to change them.
+// These values affect the handles that run the top and bottom of the
+// screens, as wel as the dowel caps that hold the assembly together.
+// This design is different from ten16's original, in that the dowels are
+// held in by end caps rather than screws (although you can choose to put
+// screws into the end caps).
 
 // The diameter of the dowel that runs the length of the heddle handles.
-//handle_dowel_dia = 7/16 * 25.4;
+// Measure your dowel and change this value if it deviates from 7/16".
+handle_dowel_dia = 7/16 * 25.4;
 
-// The thickness of the dowel cap wall.
-//cap_wall_thickness = 2.001;
+// For dowel caps, the thickness of the wall that supports the tongues
+// and into which you screw an optional wood screw.
+// FIXME: I don't know why it needs to be 0.001mm extra, but it does --
+// otherwise the screw hole doesn't punch through the outside.
+cap_wall_thickness = 2.001;
 
-// Put a screw hole in the dowel caps.
-// Set to false to rely on pressure-fitting alone.
-// Use the american_screw_size() function to choose anywhere from a
-// #2 to #5 countersunk screw hole.
-//screw = american_screw_size(3);
+// A hole for a countersunk wood screw to attach the end caps to the dowel
+// that runs through the handle of the entire heddle. You can choose an
+// American screw number from countersunk_screw_hole_scad; I've commented
+// out an example that uses a #3 screw.
+// Keep this false if you just want to pressure-fit the end caps onto the
+// dowels like I do.
+include <countersunk_screw_hole.scad>;
+screw = no_3_screw;
+//screw = false;
 
-// The amount by which to expand holes and shrink tongues.
-// Adjust this to match the precision of your printer.
-//pressure_fitting_tolerance = 0;
+// The bottom dowel caps are a bit longer than the top; this is so that
+// they can reach all the way to the heddle brace. Adjust the length
+// according to how much leftover space you expect to have after you've
+// jammed a bunch of screen panels onto your bottom dowel. The default
+// value matches that of the original design from ten16, although you'll
+// have to cut your bottom dowels shorter by cap_wall_thickness × 2 to
+// accommodate the dowel cap walls.
+bottom_cap_length = 7.75;
 
-// Adjust dowel hole tolerance separately from notch/tongue. Keep in mind
-// that if you choose pressure fittings instead of holes, the end caps
-// should be tight -- maybe 0 tolerance -- and the screens should be loose
-// to make it easy to insert and remove the dowels for quick
-// reconfiguration. You might also want to print out some test sections and
-// dry-fit your dowels to see if they're the diameter they say they are!
-//dowel_hole_tolerance = 0.015; // loose
+// How much of a pressure fitting to put on the dowel caps. The total
+// length of the top dowel caps will be this value plus the cap wall
+// thickness (so you'll have to cut your top dowels this much longer than
+// ten16's instructions), and the bottom dowel caps will just have a
+// tighter bit of this length at the very end of the dowel holes (no
+// adjustment needed here beyond what's described for the previous var).
+// NOTE THAT this value can be zero if you're using a wood screw, in which
+// case your top dowels can be the length that ten16 gives.
+dowel_pressure_fitting_length = screw ? 0 : 4;
 
-// If you leave dowel_cap_hole_tolerance alone and don't want screws, it'll
-// choose the tighter pressure-fitting tolerance rather than the loose
-// dowel hole tolerance.
-//dowel_cap_hole_tolerance = screw ? dowel_hole_tolerance : pressure_fitting_tolerance;
+top_cap_length = cap_wall_thickness + dowel_pressure_fitting_length;
 
-// Adjust notch/tongue tolerance separately from dowel hole tolerance.
-//mortise_tenon_tolerance = tolerance;
+//// MORTISE AND TENON
 
-// The dimensions of the notch and tongue to keep the dowel caps from
-// slipping. Length × depth × thickness.
-//mortise_tenon_size = [4, 3, 2];
+// The dowel end caps need some way of locking into the panel of screen
+// adjacent to them to prevent the whole dowel from rotating relative to
+// the assembly. We use a little tongue and notch -- a mortise and tenon
+// -- to make that happen. You don't need to worry about these settings
+// unless you have troubles printing them and need to adjust.
 
-// The bottom dowel caps are a bit longer; this is so that they can
-// reach all the way to the heddle brace. Adjust the length according
-// to how much leftover space you expect to have after you've jammed a
-// bunch of screen panels onto your bottom dowel.
-//bottom_cap_length = 7.75;
+// The dimensions of the mortise and tenon.
+mortise_tenon_size = [4, 3, 2];
+
+// The distance of the mortise and tenon from the non-curved end of the
+// handle.
+mortise_tenon_offset_from_base = -14.25;
+
+// The gap between the two mortises and tenons.
+mortise_tenon_spacing = 7;
+
+// The fittings are rotated slightly for optimal fit between the
+// dowel hole and the curved outer edge.
+mortise_tenon_rotation = 55;
+
+//// TOLERANCES
+
+// Do some test prints with the default values (you can find some lines
+// below to generate models for test prints) and twiddle these settings
+// as needed. There are three places the tolerances are used:
+//
+// * The screen handles, into which the dowels go -- this should be loose
+//   enough for the dowels to slide right through, but not so loose that
+//   they wobble around sloppily.
+// * The mortise-and-tenon joints in the dowel end caps -- these don't need
+//   to be snug, and in fact shouldn't (I've had tenons break off). They
+//   only need to be tight enough to not wobble around.
+// * Pressure fittings in the dowel end caps -- if you're using screws, the
+//   dowel holes in the end caps can be the same diameter as the ones in
+//   the screen handles, but if you're using pressure fitting, they should
+//   be snug.
+
+// The gap between things that should fit snugly together.
+pressure_fitting_tolerance = 0.05;
+
+// The gap between things that should _not_ fit snugly together.
+loose_tolerance = 0.1;
+
+// The vagaries of 3D printing might mean you need to adjust the mortise
+// and tenon tolerance separately from the dowel tolerance. You can adjust
+// dowel tolerance by changing handle_dowel_dia, but changing
+// mortise_tenon_size won't work the same, because it'll adjust both the
+// mortises and tenons!
+mortise_tenon_tolerance = loose_tolerance;
  
 //////// HERE'S WHERE YOU OUTPUT THE STUFF!
 
@@ -143,20 +195,33 @@ screen(1 * 25.4, band_weaving_reed_pattern_1);
 // A good value might be cap_wall_thickness * 3 = 6mm, which means 4mm of
 // the top dowel would fit into the end cap, which means it should be 8mm
 // longer than the instructions tell you.
-//rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
+//rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length, screw);
 
 // Uncomment this line to build a dowel cap for the bottom handle.
-//rotate([-90, 0, 0]) handle_with_fittings("cap", bottom_cap_length);
+//rotate([-90, 0, 0]) handle_with_fittings("cap", bottom_cap_length, screw);
 
 // Uncomment these lines to build the minimal parts needed to print a
 // presure-fitting test.
-//rotate([90, 0, 0]) handle_with_fittings("fitting-tolerance-test");
+//rotate([90, 0, 0]) handle_with_fittings("tolerance-test");
 //translate([0, -40, cap_wall_thickness]) rotate([-90, 0, 0]) handle_with_fittings("cap", cap_wall_thickness);
 
 // Uncomment these lines to build a length of handle to act as a spacer
 // (this example is for a 2" length). This might be useful if you want to
 // assemble a heddle that's shorter than your loom width.
 //rotate([0, 90, 0]) handle_with_fittings("screen", 2 * 25.4);
+
+//// DON'T TOUCH
+
+// Treat the following as constants if you want to maintain compatibility
+// with ten16's original heddle brace.
+
+// The thickness of the handle, yup.
+handle_thickness = 15.5;
+
+// This constant doesn't actually affect anything; it's just a rough
+// eyeballing of the amount the curved end pokes out beyond the cube.
+handle_bezel_height = 2.5;
+handle_height = handle_thickness + handle_bezel_height;
 
 module screen(screen_length, reed_pattern, heddle_height = heddle_height, reed_dent = reed_dent, reed_thickness = reed_thickness) {
   reed_height = heddle_height - handle_height * 2;
@@ -187,5 +252,71 @@ module reed_hole(length, width) {
     cube([length - width, width, reed_thickness + 0.003], center=true);
     translate([length / 2 - width / 2, 0, 0]) cylinder(reed_thickness + 0.003, d=width, center=true);
     translate([length / -2 + width / 2, 0, 0]) cylinder(reed_thickness + 0.003, d=width, center=true);
+  }
+}
+
+module handle_with_fittings(style, length, screw = false) {
+  if (style == "screen") {
+    difference() {
+      handle(length);
+
+      // The dowel hole.
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
+
+      translate([0, -0.001, 0]) mortise_tenon_cubes("notch");
+      // I cannot for the life of me figure out where this 0.08 is coming from and why it's necessary.
+      // Anyhow, a handle with notches needs them on both sides.
+      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
+    }
+  } else if (style == "tolerance-test") {
+    length = cap_wall_thickness + mortise_tenon_size.y + mortise_tenon_tolerance / 2;
+    difference() {
+      handle(length);
+      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
+    }
+  } else if (style == "cap") {
+    difference() {
+      union() {
+        handle(length);
+        translate([0, 0.001 - mortise_tenon_size.y, 0]) mortise_tenon_cubes("tongue");
+      };
+      dowel_hole_length = length - cap_wall_thickness;
+      dowel_hole_length_beyond_pressure_fitting = dowel_hole_length - dowel_pressure_fitting_length;
+      if (dowel_pressure_fitting_length > 0) {
+        translate([handle_thickness / -2, dowel_hole_length_beyond_pressure_fitting - 0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(dowel_pressure_fitting_length + 0.001, d=handle_dowel_dia + pressure_fitting_tolerance * 2);
+      }
+      if (dowel_hole_length_beyond_pressure_fitting > 0) {
+        translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(dowel_hole_length_beyond_pressure_fitting + 0.001, d=handle_dowel_dia + loose_tolerance * 2);
+      }
+      if (screw) {
+        // FIXME: not sure why the overlap has to be 0.01 instead of
+        // 0.001 in order to work.
+        translate([handle_thickness / -2, length + 0.01, handle_thickness / 2]) rotate([-90, 0, 0]) countersunk_screw_hole(screw[0], screw[1], cap_wall_thickness);
+      }
+    }
+  }
+}
+
+module mortise_tenon_cubes(component) {
+  mortise_tenon_depth_offset = mortise_tenon_size.y / 2 - 0.001;
+  offset = component == "notch" ? mortise_tenon_tolerance : -mortise_tenon_tolerance;
+  size = [
+    mortise_tenon_size.x + offset,
+    mortise_tenon_size.y + offset / 2,
+    mortise_tenon_size.z + offset
+  ];
+  translate([mortise_tenon_offset_from_base, mortise_tenon_depth_offset, mortise_tenon_spacing / 2]) rotate([0, mortise_tenon_rotation, 0]) cube(size, center=true);
+  translate([mortise_tenon_offset_from_base, mortise_tenon_depth_offset, handle_thickness - mortise_tenon_spacing / 2]) rotate([0, -mortise_tenon_rotation, 0]) cube(size, center=true);
+}
+
+module handle(length) {
+  translate([handle_thickness / -2, length / 2, handle_thickness / 2]) union() {
+    translate([handle_thickness / -2 + 0.65, 0, 0]) intersection() {
+      scale([0.35, 1, 1]) rotate([-90, 0, 0]) cylinder(length, d=16, center=true);
+      cube([handle_thickness * 2, length, handle_thickness], center=true);
+    }
+
+    cube([handle_thickness, length, handle_thickness], center=true);
   }
 }

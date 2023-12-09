@@ -57,22 +57,27 @@ handle_thickness = 15.5;
 handle_bezel_height = 2.5;
 handle_height = handle_thickness + handle_bezel_height;
 
-//handle_with_fittings("screen", 20);
+handle_with_fittings("fitting-tolerance-test", 20);
 
-module handle_with_fittings(style, length) {  
+module handle_with_fittings(style, length, screw = false) {  
   if (style == "screen") {
     difference() {
       handle(length);
+      
+      // The dowel hole.
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + dowel_hole_tolerance);
+
       translate([0, -0.001, 0]) mortise_tenon_cubes("notch");
       // I cannot for the life of me figure out where this 0.08 is coming from and why it's necessary.
       // Anyhow, a handle with notches needs them on both sides.
       translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
     }
-  } else if (style == "fitting-tolerance-test") {
+  } else if (style == "tolerance-test") {
     length = cap_wall_thickness + mortise_tenon_size.y + mortise_tenon_tolerance / 2;
     difference() {
       handle(length);
       translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
     }
   } else {
     union() {
@@ -105,16 +110,12 @@ module mortise_tenon_cubes(component) {
 }
 
 module handle(length) {
-  translate([handle_thickness / -2, length / 2, handle_thickness / 2]) difference() {
-    union() {
-      translate([handle_thickness / -2 + 0.65, 0, 0]) intersection() {
-        scale([0.35, 1, 1]) rotate([-90, 0, 0]) cylinder(length, d=16, center=true);
-        cube([handle_thickness * 2, length, handle_thickness], center=true);
-      }
-      
-      cube([handle_thickness, length, handle_thickness], center=true);
+  translate([handle_thickness / -2, length / 2, handle_thickness / 2]) union() {
+    translate([handle_thickness / -2 + 0.65, 0, 0]) intersection() {
+      scale([0.35, 1, 1]) rotate([-90, 0, 0]) cylinder(length, d=16, center=true);
+      cube([handle_thickness * 2, length, handle_thickness], center=true);
     }
     
-    translate([0, -0.001, 0]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + dowel_hole_tolerance, center=true);
+    cube([handle_thickness, length, handle_thickness], center=true);
   }
 }

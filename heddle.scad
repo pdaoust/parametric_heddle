@@ -160,10 +160,10 @@ mortise_tenon_rotation = 55;
 //   be snug.
 
 // The gap between things that should fit snugly together.
-pressure_fitting_tolerance = 0.05;
+pressure_fitting_tolerance = 0.15;
 
 // The gap between things that should _not_ fit snugly together.
-loose_tolerance = 0.1;
+loose_tolerance = 0.3;
 
 // The vagaries of 3D printing might mean you need to adjust the mortise
 // and tenon tolerance separately from the dowel tolerance. You can adjust

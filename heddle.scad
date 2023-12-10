@@ -171,6 +171,11 @@ loose_tolerance = 0.3;
 // mortise_tenon_size won't work the same, because it'll adjust both the
 // mortises and tenons!
 mortise_tenon_tolerance = loose_tolerance;
+
+// Think of this as Cura's horizontal expansion setting, but you're
+// expanding holes, not solids, and it's just for the holes that you slip
+// the thread through.
+reed_hole_expansion = 0.1;
  
 //////// HERE'S WHERE YOU OUTPUT THE STUFF!
 
@@ -214,13 +219,13 @@ panel(band_weaving_reed_pattern_1, 2.5 * 25.4);
 
 // Uncomment these lines to build a reed quality test.
 // 6-dent
-//screen([.9, .05], 0.667 * 25.4, 50, 6, 1);
+screen([.9, .001], 0.667 * 25.4, 50, 6, 1);
 // 8-dent
-//translate([0, 0.917 * 25.4, 0]) screen([.9, .05], 0.5 * 25.4, 50, 8, 1);
+translate([0, 0.917 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 8, 1);
 // 12-dent
-//translate([0, 1.667 * 25.4, 0]) screen([.9, .05], 0.5 * 25.4, 50, 12, 1);
+translate([0, 1.667 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 12, 1);
 // 16-dent
-//translate([0, 2.417 * 25.4, 0]) screen([.9, .05], 0.5 * 25.4, 50, 16, 1);
+translate([0, 2.417 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 16, 1);
 
 //// DON'T TOUCH
 
@@ -266,10 +271,11 @@ module panel(reed_pattern, length, heddle_height = heddle_height, reed_dent = re
 }
 
 module reed_hole(length, width) {
+  expanded_width = width + reed_hole_expansion * 2;
   translate([0, 0, reed_thickness / 2 - 0.001]) union() {
-    cube([length - width, width, reed_thickness + 0.003], center=true);
-    translate([length / 2 - width / 2, 0, 0]) cylinder(reed_thickness + 0.003, d=width, center=true);
-    translate([length / -2 + width / 2, 0, 0]) cylinder(reed_thickness + 0.003, d=width, center=true);
+    cube([length - width, expanded_width, reed_thickness + 0.003], center=true);
+    translate([length / 2 - (length < width ? 0 : width / 2), 0, 0]) cylinder(reed_thickness + 0.003, d=expanded_width, center=true);
+    translate([length / -2 + (length < width ? 0 : width / 2), 0, 0]) cylinder(reed_thickness + 0.003, d=expanded_width, center=true);
   }
 }
 

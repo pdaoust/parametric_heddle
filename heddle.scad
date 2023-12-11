@@ -279,6 +279,8 @@ module reed_hole(length, width) {
   }
 }
 
+function loose_dowel_hole_dia() = handle_dowel_dia + loose_tolerance * 2;
+
 // FIXME: DRY this code up.
 module handle_with_fittings(style, length, screw = false) {
   if (style == "panel") {

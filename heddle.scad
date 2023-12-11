@@ -203,10 +203,9 @@ reed_hole_expansion = 0.1;
 
 // Uncomment these lines to build the minimal parts needed to print a
 // fitting test.
-//translate([0, -5, 0]) handle_with_fittings("tolerance-test");
-fitting_test_spacer_size = mortise_tenon_size.y + cap_wall_thickness;
+//fitting_test_spacer_size = mortise_tenon_depth + 3;
 //translate([0, 10, fitting_test_spacer_size]) rotate([-90, 0, 0]) handle_with_fittings("spacer", fitting_test_spacer_size);
-translate([0, -31, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
+//translate([0, -31, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
 
 // Uncomment these lines to build a reed quality test.
 // 6-dent
@@ -283,13 +282,6 @@ module handle_with_fittings(style, length, screw = false) {
       
       mortise();
       translate([0, length, 0]) mortise(false);
-    }
-  } else if (style == "tolerance-test") {
-    length = mortise_tenon_depth + 3;
-    difference() {
-      handle(length);
-      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.0, d=loose_dowel_hole_dia());
-      mortise();
     }
   } else if (style == "spacer") {
     difference() {

@@ -129,7 +129,7 @@ top_cap_length = cap_wall_thickness + dowel_pressure_fitting_length;
 // unless you have troubles printing them and need to adjust.
 
 // The dimensions of the mortise and tenon.
-mortise_tenon_size = [4, 3, 2];
+mortise_tenon_size = [4, 2, 2];
 
 // The distance of the mortise and tenon from the non-curved end of the
 // handle.

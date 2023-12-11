@@ -202,20 +202,24 @@ reed_hole_expansion = 0.1;
 //rotate([-90, 0, 0]) handle_with_fittings("spacer", 2 * 25.4);
 
 // Uncomment these lines to build the minimal parts needed to print a
-// fitting test.
-//fitting_test_spacer_size = mortise_tenon_depth + 3;
-//translate([0, 10, fitting_test_spacer_size]) rotate([-90, 0, 0]) handle_with_fittings("spacer", fitting_test_spacer_size);
-//translate([0, -31, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
+// fitting test. It prints out a cap and two tiny spacers (one horizontal
+// and one vertical, so you can see whether your printer is better at
+// printing the mortise as a bridge vs printing the tenon as an overhang).
+//fitting_test();
 
-// Uncomment these lines to build a reed quality test.
-// 6-dent
-//screen([.9, .001], 0.667 * 25.4, 50, 6, 1);
-// 8-dent
-//translate([0, 0.917 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 8, 1);
-// 12-dent
-//translate([0, 1.667 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 12, 1);
-// 16-dent
-//translate([0, 2.417 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 16, 1);
+// Uncomment these lines to build a reed quality test that prints out some
+// very thin (1mm) and very short screen lengths with 6-dent, 8-dent,
+// 12-dent, and 16-dent patterns. I've found that the best determinants
+// of reed/hole quality are:
+//
+// * flow rate (gotta make sure the inner wall lines meet the outer ones)
+// * speed (slower appears to be better)
+// * various wall settings to squeeze more lines into the crannies between
+//   a straight slot wall and a rounded hole wall (these are for Cura):
+//     * wall transitioning threshold angle of 30°
+//     * wall distribution count of 2
+//     * minimum line width of half the wall line width (or less)
+//reed_test();
 
 //// DON'T TOUCH
 
@@ -345,4 +349,27 @@ module handle(length) {
 
     cube([handle_thickness, length, handle_thickness], center=true);
   }
+}
+
+module fitting_test() {
+  fitting_test_spacer_size = mortise_tenon_depth + 3;
+  // Normally you'd want to print spacers vertically, although your printer
+  // may have troubles bridging the mortise ceiling on the bottom.
+  translate([0, 10, fitting_test_spacer_size]) rotate([-90, 0, 0]) handle_with_fittings("spacer", fitting_test_spacer_size);
+  // So instead you might want to print spacers horizotally, although your
+  // printer may instead have troubles with the tenon overhang. Take a look
+  // at each of these parts and decide which one prints the best.
+  translate([0, -5, 0]) handle_with_fittings("spacer", fitting_test_spacer_size);
+  translate([0, -31, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
+}
+
+module reed_test() {
+  // 6-dent
+  screen([.9, .001], 0.667 * 25.4, 50, 6, 1);
+  // 8-dent
+  translate([0, 0.917 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 8, 1);
+  // 12-dent
+  translate([0, 1.667 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 12, 1);
+  // 16-dent
+  translate([0, 2.417 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 16, 1);
 }

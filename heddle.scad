@@ -125,22 +125,13 @@ top_cap_length = cap_wall_thickness + dowel_pressure_fitting_length;
 // The dowel end caps need some way of locking into the panel of screen
 // adjacent to them to prevent the whole dowel from rotating relative to
 // the assembly. We use a little tongue and notch -- a mortise and tenon
-// -- to make that happen. You don't need to worry about these settings
-// unless you have troubles printing them and need to adjust.
+// -- to make that happen.
+mortise_tenon_depth = 2;
 
-// The dimensions of the mortise and tenon.
-mortise_tenon_size = [4, 2, 2];
-
-// The distance of the mortise and tenon from the non-curved end of the
-// handle.
-mortise_tenon_offset_from_base = -14.25;
-
-// The gap between the two mortises and tenons.
-mortise_tenon_spacing = 7;
-
-// The fittings are rotated slightly for optimal fit between the
-// dowel hole and the curved outer edge.
-mortise_tenon_rotation = 55;
+// The mortise and tenon are just two corners on the fat end of the handle.
+// They will stick out this many millimetres past the dowel hole into that
+// fat end.
+mortise_tenon_width = 1.5;
 
 //// TOLERANCES
 
@@ -288,34 +279,32 @@ module handle_with_fittings(style, length, screw = false) {
       handle(length);
 
       // The dowel hole.
-      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
-
-      translate([0, -0.001, 0]) mortise_tenon_cubes("notch");
-      // I cannot for the life of me figure out where this 0.08 is coming from and why it's necessary.
-      // Anyhow, a handle with notches needs them on both sides.
-      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=loose_dowel_hole_dia());
+      
+      mortise();
+      translate([0, length, 0]) mortise(false);
     }
   } else if (style == "tolerance-test") {
-    length = cap_wall_thickness + mortise_tenon_size.y + mortise_tenon_tolerance / 2;
+    length = mortise_tenon_depth + 3;
     difference() {
       handle(length);
-      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
-      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.0, d=loose_dowel_hole_dia());
+      mortise();
     }
   } else if (style == "spacer") {
     difference() {
       union() {
         handle(length);
-        translate([0, 0.001 - mortise_tenon_size.y, 0]) mortise_tenon_cubes("tongue");
+        tenon(false);
       }
-      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=handle_dowel_dia + loose_tolerance * 2);
-      translate([0, length - mortise_tenon_size.y + 0.08, 0]) mortise_tenon_cubes("notch");
+      translate([handle_thickness / -2, -0.001, handle_thickness / 2]) rotate([-90, 0, 0]) cylinder(length + 0.002, d=loose_dowel_hole_dia());
+      translate([0, length, 0]) mortise(false);
     }
   } else if (style == "cap") {
     difference() {
       union() {
         handle(length);
-        translate([0, 0.001 - mortise_tenon_size.y, 0]) mortise_tenon_cubes("tongue");
+        tenon(false);
       };
       dowel_hole_length = length - cap_wall_thickness;
       dowel_hole_length_beyond_pressure_fitting = dowel_hole_length - dowel_pressure_fitting_length;
@@ -334,16 +323,25 @@ module handle_with_fittings(style, length, screw = false) {
   }
 }
 
-module mortise_tenon_cubes(component) {
-  mortise_tenon_depth_offset = mortise_tenon_size.y / 2 - 0.001;
-  offset = component == "notch" ? mortise_tenon_tolerance : -mortise_tenon_tolerance;
-  size = [
-    mortise_tenon_size.x + offset,
-    mortise_tenon_size.y + offset / 2,
-    mortise_tenon_size.z + offset
-  ];
-  translate([mortise_tenon_offset_from_base, mortise_tenon_depth_offset, mortise_tenon_spacing / 2]) rotate([0, mortise_tenon_rotation, 0]) cube(size, center=true);
-  translate([mortise_tenon_offset_from_base, mortise_tenon_depth_offset, handle_thickness - mortise_tenon_spacing / 2]) rotate([0, -mortise_tenon_rotation, 0]) cube(size, center=true);
+function mortise_tenon_cube_x() = loose_dowel_hole_dia() / 2 + mortise_tenon_width;
+
+module tenon(above_zero = true) {
+  cube_x = mortise_tenon_cube_x() - mortise_tenon_tolerance;
+  cube_depth = mortise_tenon_depth - mortise_tenon_tolerance + 0.001;
+
+  translate([0, above_zero ? -0.001 : -cube_depth, 0]) difference() {
+    translate([handle_thickness / -2 - cube_x, 0, (handle_thickness - loose_dowel_hole_dia()) / 2 + mortise_tenon_tolerance]) cube([cube_x, cube_depth, loose_dowel_hole_dia() - mortise_tenon_tolerance * 2]);
+    // Cut out a dowel hole. Always use the loose diameter, because even
+    // tenons on pressure-fitted caps slip into loose-fitted spacers and
+    // panels.
+    translate([handle_thickness / -2, cube_depth + 0.001, handle_thickness / 2]) rotate([90, 0, 0]) cylinder(cube_depth + 0.002, d=loose_dowel_hole_dia());
+  }
+}
+
+module mortise(above_zero = true) {
+  cube_x = mortise_tenon_cube_x() + mortise_tenon_tolerance;
+  cube_depth = mortise_tenon_depth + mortise_tenon_tolerance + 0.001;
+  translate([handle_thickness / -2 - cube_x, above_zero ? -0.001 : -cube_depth + 0.001, (handle_thickness - loose_dowel_hole_dia()) / 2]) cube([cube_x, cube_depth, loose_dowel_hole_dia()]);
 }
 
 module handle(length) {

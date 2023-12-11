@@ -192,7 +192,7 @@ reed_hole_expansion = 0.1;
 // screen length of some multiple of 1/4".
 // The example given here uses the band weaving pattern to create a 7-band
 // heddle panel to be used between two conventional slot-and-hole panels.
-panel(band_weaving_reed_pattern_1, 2.5 * 25.4);
+//panel(band_weaving_reed_pattern_1, 2.5 * 25.4);
 
 // Uncomment this line to build a dowel cap for the top handle.
 // Note that if you want to rely on pressure-fitting alone, you'll want to
@@ -211,21 +211,21 @@ panel(band_weaving_reed_pattern_1, 2.5 * 25.4);
 //rotate([-90, 0, 0]) handle_with_fittings("spacer", 2 * 25.4);
 
 // Uncomment these lines to build the minimal parts needed to print a
-// presure-fitting test.
+// fitting test.
 //translate([0, -5, 0]) handle_with_fittings("tolerance-test");
-//fitting_test_spacer_size = mortise_tenon_size.y + cap_wall_thickness;
+fitting_test_spacer_size = mortise_tenon_size.y + cap_wall_thickness;
 //translate([0, 10, fitting_test_spacer_size]) rotate([-90, 0, 0]) handle_with_fittings("spacer", fitting_test_spacer_size);
-//translate([0, -31, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
+translate([0, -31, top_cap_length]) rotate([-90, 0, 0]) handle_with_fittings("cap", top_cap_length);
 
 // Uncomment these lines to build a reed quality test.
 // 6-dent
-screen([.9, .001], 0.667 * 25.4, 50, 6, 1);
+//screen([.9, .001], 0.667 * 25.4, 50, 6, 1);
 // 8-dent
-translate([0, 0.917 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 8, 1);
+//translate([0, 0.917 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 8, 1);
 // 12-dent
-translate([0, 1.667 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 12, 1);
+//translate([0, 1.667 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 12, 1);
 // 16-dent
-translate([0, 2.417 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 16, 1);
+//translate([0, 2.417 * 25.4, 0]) screen([.9, .001], 0.5 * 25.4, 50, 16, 1);
 
 //// DON'T TOUCH
 
